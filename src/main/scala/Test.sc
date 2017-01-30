@@ -1,5 +1,6 @@
-
+import com.martinetherton.Polygon
 
 object Test {
-  val myStack = List(1,2,3)
+  val myPolygons = new Polygon(3).solution()
+  println(myPolygons)
 }
