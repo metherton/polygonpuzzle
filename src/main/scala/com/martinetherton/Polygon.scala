@@ -20,12 +20,12 @@ class Polygon(numberOfSides: Int) {
 
   val permutations = nodes.permutations.map(p => p.toVector).toVector
 
-  println(permutations)
+//  println(permutations)
 
   val possibleSolutions = for {
     start <- startOptions
     permutation <- permutations
-    solution = loop(permutation.toVector.filterNot(p => doCheck(start, p)), start, Vector(start), Vector()) if (solution.size == numberOfSides)
+    solution = loop(permutation.filterNot(p => doCheck(start, p)), start, Vector(start), Vector()) if (solution.size == numberOfSides)
   } yield solution
 
 //  val possibleSolutions = for {
