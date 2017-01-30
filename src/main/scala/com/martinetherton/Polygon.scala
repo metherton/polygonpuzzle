@@ -5,45 +5,55 @@ package com.martinetherton
   */
 class Polygon(numberOfSides: Int) {
 
-  val startOptions = for {
+  var counter = 0
+
+  val tempStartOptions = for {
     x <- 0 to numberOfSides - 1
   } yield (x, 0)
+
+  val startOptions = tempStartOptions.filter(o => if (numberOfSides % 2 == 0) o._1 < numberOfSides / 2 else o._1  < numberOfSides / 2 + 1)
 
   val nodes = for {
     x <- 0 to numberOfSides -1
     y <- 1 to numberOfSides - 1
   } yield (x, y)
 
-  val permutations = nodes.permutations
+  val permutations = nodes.permutations.map(p => p.toVector).toVector
 
-//  println(startOptions)
-//  permutations.foreach(p => println(p))
+  println(permutations)
 
   val possibleSolutions = for {
     start <- startOptions
     permutation <- permutations
-    solution = loop(permutation.toList.filterNot(p => doCheck(start, p)), start, List(start), List()) if (solution.size == numberOfSides)
+    solution = loop(permutation.toVector.filterNot(p => doCheck(start, p)), start, Vector(start), Vector()) if (solution.size == numberOfSides)
   } yield solution
+
+//  val possibleSolutions = for {
+//    start <- startOptions
+//    permutation <- permutations
+//   // bla = (permutation, start)
+//  //  solution = loop(permutation.toVector.filterNot(p => doCheck(start, p)), start, Vector(start), Vector()) if (solution.size == numberOfSides)
+//  } yield (start, permutation)
 
   //permutation.filterNot(p => !doCheck(start, p))
 
-  println(possibleSolutions)
+  println(possibleSolutions.distinct)
 
-  def loop(possibleNodes: List[(Int,Int)], destination: (Int,Int), actions: List[(Int, Int)], angles: List[Double]): List[(Int,Int)] = actions.size match {
-    case `numberOfSides` => if (angles.exists(p => p == (actions.head._2 - destination._2).toDouble / (actions.head._1 - destination._1))) List() else actions
+  def loop(possibleNodes: Vector[(Int,Int)], destination: (Int,Int), actions: Vector[(Int, Int)], angles: Vector[Double]): Vector[(Int,Int)] = actions.size match {
+    case `numberOfSides` => if (angles.exists(p => p == (actions.head._2 - destination._2).toDouble / (actions.head._1 - destination._1))) Vector() else actions
     case _ => possibleNodes match {
-      case Nil => List()
-      case x :: xs => if (isValidAngle(x, actions.head, angles)) loop(getNewPermutations(xs, x), destination, x +: actions, getNewAngle(x, actions.head) +: angles) else List()
+      case Vector() => Vector()
+      case x +: xs => if (isValidAngle(x, actions.head, angles)) loop(getNewPermutations(xs, x, destination), destination, x +: actions, getNewAngle(x, actions.head) +: angles) else Vector()
     }
   }
 
-  def isValidAngle(newPoint: (Int, Int), oldPoint: (Int,Int), angles: List[Double]): Boolean =
+  def isValidAngle(newPoint: (Int, Int), oldPoint: (Int,Int), angles: Vector[Double]): Boolean =
     !angles.exists(l => l == (newPoint._2 - oldPoint._2).toDouble / (newPoint._1 - oldPoint._1))
 
   //loop(getNewPermutations(xs, x, List()), x +: actions, getNewAngle(x, actions.head) +: angles)
 
   def getNewAngle(newPoint: (Int, Int), oldPoint: (Int,Int)): Double = (oldPoint._2 - newPoint._2).toDouble / (oldPoint._1 - newPoint._1)
-  def getNewPermutations(possibleNodes: List[(Int, Int)], newNode: (Int, Int)): List[(Int, Int)] = {
+  def getNewPermutations(possibleNodes: Vector[(Int, Int)], newNode: (Int, Int), d: (Int,Int)): Vector[(Int, Int)] = {
     val newNodes = possibleNodes.filterNot(p => doCheck(newNode, p))
     newNodes
   }

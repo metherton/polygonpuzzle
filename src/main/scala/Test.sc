@@ -1,6 +1,10 @@
 import com.martinetherton.Polygon
 
 object Test {
-  val myPolygons = new Polygon(3).solution()
-  println(myPolygons)
+  val p = for {
+    i <- 1 to 10
+    j <- 1 to 5
+    k = i * j
+  } yield k
+  println(p)
 }
